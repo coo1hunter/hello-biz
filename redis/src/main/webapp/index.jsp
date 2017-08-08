@@ -15,7 +15,7 @@
         }
         function del(id){
             if (window.confirm("确认删除此条信息？")){
-                window.location.href="${pageContext.request.contextPath }/delete?param="+id;
+                window.location.href="${pageContext.request.contextPath }/delete?param="+id+"&currentPage=${page.currentPage}";
             }
         }
     </script>
@@ -23,7 +23,7 @@
 <body>
 <center><h2>学生管理系统</h2></center>
 <center>
-    <a href="<%=request.getContextPath()%>/add.jsp">新增学生</a>
+    <a href="add.jsp">新增学生</a>
 <table border="1" style="width: 60%">
     <tr>
         <td>学号</td>
@@ -39,7 +39,7 @@
             <td><c:out value="${student.birthday}"></c:out></td>
             <td><c:out value="${student.description}"/></td>
             <td><c:out value="${student.avgscore}"/></td>
-            <td><a href="<%=request.getContextPath()+ "/alter?param="%>${student.id} ">修改</a></td>
+            <td><a href="${request.contextPath}alter?param=${student.id}&currentPage=${page.currentPage}">修改</a></td>
             <td><a href="#" onclick="del(${student.id})">删除</a></td>
         </tr>
     </c:forEach>

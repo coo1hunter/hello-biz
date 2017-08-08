@@ -6,17 +6,17 @@ import java.io.Serializable;
  * Created by cool on 2017/7/19.
  */
 public class PageBean implements Serializable{
-    private int currentPage = 1; // 当前页, 默认显示第一页
+    private Long currentPage = 1l; // 当前页, 默认显示第一页
     private int pageCount = 10;   // 每页显示的行数(查询返回的行数), 默认每页显示4行
-    private int totalCount;      // 总记录数
-    private int totalPage;       // 总页数 = 总记录数 / 每页显示的行数  (+ 1)
+    private Long totalCount;      // 总记录数
+    private Long totalPage;       // 总页数 = 总记录数 / 每页显示的行数  (+ 1)
 
 
-    public int getCurrentPage() {
+    public Long getCurrentPage() {
         return currentPage;
     }
 
-    public void setCurrentPage(int currentPage) {
+    public void setCurrentPage(Long currentPage) {
         this.currentPage = currentPage;
     }
 
@@ -28,15 +28,15 @@ public class PageBean implements Serializable{
         this.pageCount = pageCount;
     }
 
-    public int getTotalCount() {
+    public Long getTotalCount() {
         return totalCount;
     }
 
-    public void setTotalCount(int totalCount) {
+    public void setTotalCount(Long totalCount) {
         this.totalCount = totalCount;
     }
 
-    public int getTotalPage() {
+    public Long getTotalPage() {
         if (totalCount % pageCount == 0) {
             totalPage = totalCount / pageCount;
         } else {
@@ -45,7 +45,7 @@ public class PageBean implements Serializable{
         return totalPage;
     }
 
-    public void setTotalPage(int totalPage) {
+    public void setTotalPage(Long totalPage) {
         this.totalPage = totalPage;
     }
 }

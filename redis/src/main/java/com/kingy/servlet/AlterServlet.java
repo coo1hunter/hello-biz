@@ -1,6 +1,8 @@
 package com.kingy.servlet;
 
 import com.kingy.entity.Student;
+import com.kingy.service.StudentService;
+import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.ServletException;
@@ -23,20 +25,16 @@ public class AlterServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Jedis jedis = new Jedis();
         String id = request.getParameter("param");
-        Map<String, String> map = jedis.hgetAll(id);
-        String name = map.get("name");
-        String birthday = map.get("birthday");
-        String description = map.get("description");
-        int avgscore = Integer.parseInt(map.get("avgscore"));
-        Student student = null;
-        try {
-            student = new Student(id,name,birthday,description,avgscore);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        request.setAttribute("student",student);
-        request.getRequestDispatcher("update.jsp").forward(request,response);
+        String currentPage = request.getParameter("currentPage");
+        StudentService studentService = new StudentService();
+       if (StringUtils.isEmpty(id) || StringUtils.isEmpty(currentPage)){
+           response.sendRedirect("error.jsp");
+       }else {
+           Student student = studentService.getStudent(id);
+           request.setAttribute("student", student);
+           request.setAttribute("currentPage",currentPage);
+           request.getRequestDispatcher("update.jsp").forward(request, response);
+       }
     }
 }

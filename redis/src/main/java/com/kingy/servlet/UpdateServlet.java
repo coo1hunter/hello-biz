@@ -1,6 +1,10 @@
 package com.kingy.servlet;
 
+import com.kingy.Utils.JedisUtil;
+import com.kingy.Utils.StudentUtil;
 import com.kingy.entity.Student;
+import com.kingy.service.StudentService;
+import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.ServletException;
@@ -22,57 +26,41 @@ public class UpdateServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Jedis jedis = new Jedis();
+        StudentService studentService = new StudentService();
         String id = request.getParameter("id");
-        String name = request.getParameter("name");
-        String birthday = request.getParameter("birthday");
-        String description = request.getParameter("description");
-        String avgscore = request.getParameter("avgscore");
-        if ("".equals(id) || "".equals(name) || "".equals(birthday) || "".equals(description) || "".equals(avgscore)){
-            if ("add".equals(request.getParameter("prejsp"))){
-                request.setAttribute("message","输入信息有误");
-                request.getRequestDispatcher("/add.jsp").forward(request,response);
-            }else {
-                Map<String, String> map = jedis.hgetAll(id);
-                Student student = null;
-                try {
-                    student = new Student(id,map.get("name"),map.get("birthday"),
-                            map.get("description"),Integer.valueOf(map.get("avgscore")));
-                } catch (ParseException e1) {
-                    e1.printStackTrace();
+        String currentPage = request.getParameter("currentPage");
+        if (StudentUtil.isInfoEmpty(request)){
+                if (StringUtils.isEmpty(id) || StringUtils.isEmpty(currentPage)){
+                    response.sendRedirect("error.jsp");
+                }else {
+                    Student student = studentService.getStudent(id);
+                    request.setAttribute("student", student);
+                    request.setAttribute("currentPage",currentPage);
+                    request.setAttribute("message", "输入信息有误");
+                    request.getRequestDispatcher("/update.jsp").forward(request, response);
                 }
-                request.setAttribute("student",student);
-                request.setAttribute("message","输入信息有误");
-                request.setAttribute("id",id);
-                request.getRequestDispatcher("/update.jsp").forward(request,response);
-            }
         }else{
             SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
             try {
+                String birthday = request.getParameter("birthday");
                 Date date = format.parse(birthday);
-                Boolean isExist = jedis.exists(id);
-                if (isExist && "add".equals(request.getParameter("prejsp"))){
-                    request.setAttribute("message","用户已存在");
-                    request.getRequestDispatcher("add.jsp").forward(request,response);
-                }else {
-                    jedis.hset(id, "name", name);
-                    jedis.hset(id, "birthday", birthday);
-                    jedis.hset(id, "description", description);
-                    jedis.hset(id, "avgscore", avgscore);
-                    jedis.zadd("student", Double.parseDouble(avgscore), id);
-                    response.sendRedirect(request.getContextPath()+"/studentmanager");
+                Student student = StudentUtil.getStudentByParam(request);
+                if (student == null){
+                    student = studentService.getStudent(id);
+                    request.setAttribute("student",student);
+                    request.setAttribute("message","存储异常错误");
+                    request.setAttribute("currentPage",currentPage);
+                    request.getRequestDispatcher("update.jsp").forward(request,response);
+                } else {
+                    studentService.save(student);
+                    request.setAttribute("currentPage",currentPage);
+                    request.getRequestDispatcher("/studentmanager").forward(request,response);
                 }
             } catch (ParseException e) {
-                Map<String, String> map = jedis.hgetAll(id);
-                Student student = null;
-                try {
-                    student = new Student(id,map.get("name"),map.get("birthday"),
-                            map.get("description"),Integer.valueOf(map.get("avgscore")));
-                } catch (ParseException e1) {
-                    e1.printStackTrace();
-                }
+                Student student = studentService.getStudent(id);
+                request.setAttribute("currentPage",currentPage);
                 request.setAttribute("student",student);
-                request.setAttribute("message","输入信息有误");
+                request.setAttribute("message","日期格式错误");
                 request.getRequestDispatcher("update.jsp").forward(request,response);
             }
         }

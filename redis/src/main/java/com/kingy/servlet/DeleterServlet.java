@@ -1,5 +1,7 @@
 package com.kingy.servlet;
 
+import com.kingy.service.StudentService;
+import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.ServletException;
@@ -18,10 +20,15 @@ public class DeleterServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("param");
-        Jedis jedis = new Jedis();
-        jedis.del(id);
-        jedis.zrem("student",id);
-        request.setAttribute("id",id);
-        request.getRequestDispatcher("/studentmanager").forward(request,response);
+        String currentPage = request.getParameter("currentPage");
+        StudentService studentService = new StudentService();
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(currentPage)){
+            response.sendRedirect("error.jsp");
+        }else {
+            studentService.delete(id);
+            request.setAttribute("id", id);
+            request.setAttribute("currentPage",currentPage);
+            request.getRequestDispatcher("/studentmanager").forward(request, response);
+        }
     }
 }

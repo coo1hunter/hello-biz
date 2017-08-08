@@ -6,8 +6,8 @@
 
   <display-name>Archetype Created Web Application</display-name>
   <servlet>
-    <servlet-name>servlet</servlet-name>
-    <servlet-class>com.kingy.servlet.Servlet</servlet-class>
+    <servlet-name>ListServlet</servlet-name>
+    <servlet-class>com.kingy.servlet.ListServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AlterServlet</servlet-name>
@@ -34,7 +34,16 @@
     <url-pattern>/alter</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>servlet</servlet-name>
+    <servlet-name>ListServlet</servlet-name>
     <url-pattern>/studentmanager</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>AddServlet</servlet-name>
+    <servlet-class>com.kingy.servlet.AddServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AddServlet</servlet-name>
+    <url-pattern>/add</url-pattern>
   </servlet-mapping>
 </web-app>
